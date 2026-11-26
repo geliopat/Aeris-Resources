@@ -10,3 +10,7 @@ The authoritative design baseline is in [Aeris-Core/docs](https://github.com/gel
 - [ROADMAP.md](https://github.com/geliopat/Aeris-Core/blob/main/docs/ROADMAP.md)
 - [TESTING.md](https://github.com/geliopat/Aeris-Core/blob/main/docs/TESTING.md)
 - [COMPATIBILITY.md](https://github.com/geliopat/Aeris-Core/blob/main/docs/COMPATIBILITY.md)
+
+## Catalog integrity checks
+
+Run `python tools/validate_catalog.py` and `python -m unittest discover -s tools -p 'test_*.py'` with Python 3.12. The validator expects files under the checkout at relative paths with forward slashes. It rejects links, ambiguous paths, duplicate JSON keys and incorrect SHA-256 digests. Tests use synthetic resources. Source, revision, license and compatibility fields are checked for presence. Signing, license review and runtime compatibility have separate acceptance criteria in Aeris-Core.
