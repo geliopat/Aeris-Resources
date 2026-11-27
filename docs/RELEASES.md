@@ -1,3 +1,5 @@
 # Release and Nightly — gates
 
 Independent versions start at 0.1.0. Release requires manual approval and the full Release 1.0.0 gate and applicable core-client checks in the canonical Aeris-Core TESTING.md. Nightly requires actual implemented functionality, passing mandatory CI, and a change since its previous build; use a unique UTC date/run identifier. Never publish unsigned manifests or unsupported driver packages. Current CI runs the catalog validator and its tests. Artifact signing, publication and automatic release workflows are still pending. Add release automation only after signing trust roots, artifact layout, rollback and real Windows validation are established. Preview channel is excluded.
+
+The validation workflow offers FAST, FULL and CLEAN manual runs. The same catalog tests and validation run in each mode. The repository has no compiled product or cached resource package. Future distribution follows the canonical [CI/CD release contract](https://github.com/geliopat/Aeris-Core/blob/main/docs/RELEASES.md).
