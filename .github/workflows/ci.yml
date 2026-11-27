@@ -3,15 +3,50 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Build mode
+        type: choice
+        default: FAST
+        options: [FAST, FULL, CLEAN]
 permissions:
   contents: read
+env:
+  BUILD_MODE: ${{ inputs.mode || 'FAST' }}
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.1.0
+      - name: Start timing
+        run: echo "CI_STARTED=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
-      - run: python -m unittest discover -s tools -p 'test_*.py'
-      - run: python tools/validate_catalog.py
+      - name: Test and validate catalog
+        id: validation
+        run: |
+          now=$(date +%s)
+          echo "CI_VALIDATION_STARTED=$now" >> "$GITHUB_ENV"
+          python -B -m unittest discover -s tools -p 'test_*.py'
+          python -B tools/validate_catalog.py
+      - name: Build summary
+        if: always()
+        env:
+          VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
+        run: |
+          now=$(date +%s)
+          {
+            printf '### Resource validation\n\n'
+            printf -- '- Mode: %s\n' "$BUILD_MODE"
+            printf -- '- Cache: unused; the validator uses the Python standard library\n'
+            printf -- '- Catalog validation: %s; compilation and packaging do not apply\n' "${VALIDATION_OUTCOME:-skipped}"
+            if command -v python >/dev/null; then printf -- '- %s\n' "$(python --version)"; fi
+            if [[ -n "${CI_VALIDATION_STARTED:-}" ]]; then
+              printf -- '- Preparation: %ss\n' "$((CI_VALIDATION_STARTED - CI_STARTED))"
+              printf -- '- Tests and validation: %ss\n' "$((now - CI_VALIDATION_STARTED))"
+            fi
+            if [[ -n "${CI_STARTED:-}" ]]; then printf -- '- Total: %ss\n' "$((now - CI_STARTED))"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
