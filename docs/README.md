@@ -14,3 +14,5 @@ The authoritative design baseline is in [Aeris-Core/docs](https://github.com/gel
 ## Catalog integrity checks
 
 Run `python tools/validate_catalog.py` and `python -m unittest discover -s tools -p 'test_*.py'` with Python 3.12. The validator expects files under the checkout at relative paths with forward slashes. It rejects links, ambiguous paths, duplicate JSON keys and incorrect SHA-256 digests. Tests use synthetic resources. Source, revision, license and compatibility fields are checked for presence. Signing, license review and runtime compatibility have separate acceptance criteria in Aeris-Core.
+
+DPI resource work follows stage 10 in the canonical [roadmap](https://github.com/geliopat/Aeris-Core/blob/main/docs/ROADMAP.md). Use its [reference order and compatibility requirements](https://github.com/geliopat/Aeris-Core/blob/main/docs/UPSTREAM.md) for Zapret2 strategy, Lua and list resources. Exclude Zapret1 formats and conversion. The resource catalog remains separate from the deferred registry for extensible modules.
